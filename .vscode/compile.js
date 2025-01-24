@@ -5,7 +5,9 @@ const path = require("path");
 const args = process.argv.splice(2);
 
 const exportPathes = [
-    "E:/study/IT/Projects/Laya/Laya2.13.1_beta_framework/ui/plugins/myplugin",
+    "E:/study/IT/Projects/Laya/2.0/framework/ui/plugins/myplugin",
+    "E:/study/IT/Projects/Laya/3.0/framework/ui/plugins/myplugin",
+    "E:/study/IT/Projects/Laya/3.0/framework_without_editor/ui/plugins/myplugin",
     // "E:/study/IT/Projects/Laya/XiuXian/ui/plugins",
     // "E:/study/IT/Projects/Laya/JiuChongShiLian/ui/plugins",
     // "E:/study/IT/Projects/FairyGUI/FGUICustomInspector/plugins"
