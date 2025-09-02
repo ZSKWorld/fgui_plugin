@@ -104,6 +104,17 @@ class EditorUtils {
             | CS.System.Reflection.BindingFlags.Static
             | CS.System.Reflection.BindingFlags.NonPublic);
     }
+    static CopyItemPathes(items) {
+        const result = [];
+        const count = items.Count;
+        for (let i = 0; i < count; i++) {
+            const iv = items.get_Item(i);
+            if (iv.type != CS.FairyEditor.FPackageItemType.IMAGE)
+                continue;
+            result.push(`\t"${iv.file.replace(/\\/g, "/")}"`);
+        }
+        CS.FairyEditor.Clipboard.SetText(`[\n${result.join(",\n")}\n];`);
+    }
 }
 exports.EditorUtils = EditorUtils;
 //界面

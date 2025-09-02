@@ -54,7 +54,7 @@ export class EditorUtils {
      */
     public static AddComponent(url: string): void {
         if (!CS.FairyEditor.App.activeDoc) return;
-        if (url.startsWith("ui://") == false) return CS.FairyEditor.App.Alert(`错误的组件URL---${url}\nURL必须以 ui:// 开头`);
+        if (url.startsWith("ui://") == false) return CS.FairyEditor.App.Alert(`错误的组件URL---${ url }\nURL必须以 ui:// 开头`);
         CS.FairyEditor.App.activeDoc.UnselectAll();
         CS.FairyEditor.App.activeDoc.InsertObject(url);
     }
@@ -76,7 +76,7 @@ export class EditorUtils {
     /**获取config目录下的配置路径 */
     public static GetConfigPath(type: ConfigType, fileName: string): string {
         const dir = type ? type + "/" : "";
-        return `${this.GetPluginRootDir()}/config/${dir}${fileName}.json`;
+        return `${ this.GetPluginRootDir() }/config/${ dir }${ fileName }.json`;
     }
 
     /**获取config目录下的配置数据 */
@@ -96,7 +96,7 @@ export class EditorUtils {
 
     }
 
-    public static GetFields(obj:CS.System.Object) {
+    public static GetFields(obj: CS.System.Object) {
         if (!obj) return null;
         return obj.GetType().GetFields(
             CS.System.Reflection.BindingFlags.Public
@@ -104,6 +104,17 @@ export class EditorUtils {
             | CS.System.Reflection.BindingFlags.Static
             | CS.System.Reflection.BindingFlags.NonPublic
         );
+    }
+
+    public static CopyItemPathes(items: CS.System.Collections.Generic.List$1<CS.FairyEditor.FPackageItem>) {
+        const result: string[] = [];
+        const count = items.Count;
+        for (let i = 0; i < count; i++) {
+            const iv = items.get_Item(i);
+            if (iv.type != CS.FairyEditor.FPackageItemType.IMAGE) continue;
+            result.push(`\t"${ iv.file.replace(/\\/g, "/") }"`);
+        }
+        CS.FairyEditor.Clipboard.SetText(`[\n${ result.join(",\n") }\n];`);
     }
 }
 

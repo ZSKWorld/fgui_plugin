@@ -14,7 +14,10 @@ import { MenuDoc_CreateComponent } from './core/menu/menuDoc/MenuDoc_CreateCompo
 import { MenuDoc_CreateLayaName } from './core/menu/menuDoc/MenuDoc_CreateLayaName';
 import { MenuDoc_CreateLuaName } from './core/menu/menuDoc/MenuDoc_CreateLuaName';
 import { MenuDoc_CreateRelation } from './core/menu/menuDoc/MenuDoc_CreateRelation';
+import { MenuLib_CopyResPath } from './core/menu/menuLib/MenuLib_CopyResPath';
 import { MenuLib_CreateController } from './core/menu/menuLib/MenuLib_CreateController';
+import { MenuLibFolder_CopyResPath } from './core/menu/menuLibFolder/MenuLibFolder_CopyResPath';
+import { MenuLibPackage_CopyResPath } from './core/menu/menuLibPackage/MenuLibPackage_CopyResPath';
 import { MenuMain_ImageReference } from './core/menu/menuMain/MenuMain_ImageReference';
 import { MenuMain_Publish } from './core/menu/menuMain/MenuMain_Publish';
 import { MenuTest_Doc } from './core/menu/test/MenuTest_Doc';
@@ -33,7 +36,14 @@ CustomSetting.Init();
     new MenuDoc_CreateComponent(),
 
     //资源库菜单
+    new MenuLib_CopyResPath(),
     new MenuLib_CreateController(),
+    
+    //资源库 Folder菜单
+    new MenuLibFolder_CopyResPath(),
+
+    //资源库 Package菜单
+    new MenuLibPackage_CopyResPath(),
 
     //主菜单
     new MenuMain_Publish(),
@@ -46,7 +56,7 @@ CustomSetting.Init();
 
     //检查器
     new BtnInspector(new InspectorData(PkgCustom, PkgCustom_Btn, InspectorName.Custom_BtnInspector, "按钮自定义数据", ShowObjectType.Button, true)),
-    new ComInspector(new InspectorData(PkgCustom, PkgCustom_Btn, InspectorName.Custom_ComInspector, "组件自定义数据", ShowObjectType.Component, true, true)),
+    // new ComInspector(new InspectorData(PkgCustom, PkgCustom_Btn, InspectorName.Custom_ComInspector, "组件自定义数据", ShowObjectType.Component, true, true)),
     new TextLayoutInspector(new InspectorData(PkgCustom, PkgCustom_Text, "TextInspector", "文本横竖排", ShowObjectType.Mixed, true)),
 ].forEach(v => v.Create());
 
