@@ -96,6 +96,34 @@ function genReferenceExt(writer: CodeWriter, references: CS.System.Collections.G
     }
 }
 
+const MemberTypeMap = {
+    "fgui.GComponent":"com_",
+    "fgui.GButton":"btn_",
+    "fgui.GComboBox":"cmb_",
+    "fgui.GLabel":"label_",
+    "fgui.GProgressBar":"pb_",
+    "fgui.GScrollBar":"sb_",
+    "fgui.GSlider":"slider_",
+    "fgui.GTextField":"txt_",
+    "fgui.GRichTextField":"rtxt_",
+    "fgui.GTextInput":"itxt_",
+    "fgui.GGraph":"graph_",
+    "fgui.GList":"list_",
+    "fgui.GLoader":"loader_",
+    "fgui.GGroup":"group_",
+    "fgui.GLoader3D":"loader3d_",
+    "fgui.GImage":"img_",
+    "fgui.Controller":"ctrl_",
+    "fgui.Transition":"trans_",
+};
+function customVarName(varType:string, varName: string) {
+    if (!MemberTypeMap[varType]) {
+        console.error("未知的类型：", varName);
+        return varName;
+    }
+    return MemberTypeMap[varType] + varName;
+}
+
 export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
     let settings = (<CS.FairyEditor.GlobalPublishSettings>handler.project.GetSettings("Publish")).codeGeneration;
     let codePkgName = handler.ToFilename(handler.pkg.name); //convert chinese to pinyin, remove special chars etc.
@@ -139,7 +167,7 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
         let memberCnt = members.Count;
         for (let j: number = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln('public %s: %s;', memberInfo.varName, memberInfo.type);
+            writer.writeln('public %s: %s;', customVarName(memberInfo.type, memberInfo.varName), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
@@ -156,21 +184,21 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
             let memberInfo = members.get_Item(j);
             if (memberInfo.group == 0) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', memberInfo.varName, memberInfo.type, memberInfo.name);
+                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', customVarName(memberInfo.type, memberInfo.varName), memberInfo.type, memberInfo.name);
                 else
-                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', memberInfo.varName, memberInfo.type, memberInfo.index);
+                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', customVarName(memberInfo.type, memberInfo.varName), memberInfo.type, memberInfo.index);
             }
             else if (memberInfo.group == 1) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getController("%s");', memberInfo.varName, memberInfo.name);
+                    writer.writeln('this.%s = this.getController("%s");', customVarName(memberInfo.type, memberInfo.varName), memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getControllerAt(%s);', memberInfo.varName, memberInfo.index);
+                    writer.writeln('this.%s = this.getControllerAt(%s);', customVarName(memberInfo.type, memberInfo.varName), memberInfo.index);
             }
             else {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getTransition("%s");', memberInfo.varName, memberInfo.name);
+                    writer.writeln('this.%s = this.getTransition("%s");', customVarName(memberInfo.type, memberInfo.varName), memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getTransitionAt(%s);', memberInfo.varName, memberInfo.index);
+                    writer.writeln('this.%s = this.getTransitionAt(%s);', customVarName(memberInfo.type, memberInfo.varName), memberInfo.index);
             }
         }
         writer.endBlock();
