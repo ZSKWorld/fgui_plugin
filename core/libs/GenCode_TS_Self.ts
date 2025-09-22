@@ -114,14 +114,22 @@ const MemberTypeMap = {
     "fgui.GLoader3D":"loader3d_",
     "fgui.GImage":"img_",
     "fgui.Controller":"ctrl_",
-    "fgui.Transition":"trans_",
+    "fgui.Transition": "trans_",
+    
+    
+    "component":"com_",
 };
-function customVarName(varType:string, varName: string) {
-    if (!MemberTypeMap[varType]) {
-        console.error("未知的类型：", varName);
-        return varName;
+function customMemberVarName(member: CS.FairyEditor.PublishHandler.MemberInfo) {
+    const { varName, type} = member;
+    if (!MemberTypeMap[type]) {
+        if (member.res && MemberTypeMap[member.res.type]) {
+            return MemberTypeMap[member.res.type] + varName;
+        } else {
+            console.error("未知的类型：", varName);
+            return varName;
+        }
     }
-    return MemberTypeMap[varType] + varName;
+    return MemberTypeMap[type] + varName;
 }
 
 export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
@@ -167,7 +175,7 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
         let memberCnt = members.Count;
         for (let j: number = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln('public %s: %s;', customVarName(memberInfo.type, memberInfo.varName), memberInfo.type);
+            writer.writeln('public %s: %s;', customMemberVarName(memberInfo), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
@@ -184,21 +192,21 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
             let memberInfo = members.get_Item(j);
             if (memberInfo.group == 0) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', customVarName(memberInfo.type, memberInfo.varName), memberInfo.type, memberInfo.name);
+                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', customMemberVarName(memberInfo), memberInfo.type, memberInfo.name);
                 else
-                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', customVarName(memberInfo.type, memberInfo.varName), memberInfo.type, memberInfo.index);
+                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', customMemberVarName(memberInfo), memberInfo.type, memberInfo.index);
             }
             else if (memberInfo.group == 1) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getController("%s");', customVarName(memberInfo.type, memberInfo.varName), memberInfo.name);
+                    writer.writeln('this.%s = this.getController("%s");', customMemberVarName(memberInfo), memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getControllerAt(%s);', customVarName(memberInfo.type, memberInfo.varName), memberInfo.index);
+                    writer.writeln('this.%s = this.getControllerAt(%s);', customMemberVarName(memberInfo), memberInfo.index);
             }
             else {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getTransition("%s");', customVarName(memberInfo.type, memberInfo.varName), memberInfo.name);
+                    writer.writeln('this.%s = this.getTransition("%s");', customMemberVarName(memberInfo), memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getTransitionAt(%s);', customVarName(memberInfo.type, memberInfo.varName), memberInfo.index);
+                    writer.writeln('this.%s = this.getTransitionAt(%s);', customMemberVarName(memberInfo), memberInfo.index);
             }
         }
         writer.endBlock();
