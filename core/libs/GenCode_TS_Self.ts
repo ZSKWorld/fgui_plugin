@@ -117,16 +117,23 @@ const MemberTypeMap = {
     "fgui.Transition": "trans_",
     
     
-    "component":"com_",
+    // "component":"com_",
+    "Button": "btn_",
+    "Label":"label_",
+    "ProgressBar":"pb_",
+    "ScrollBar":"sb_",
+    "Slider":"slider_",
+    "ComboBox":"cmb_",
 };
 function customMemberVarName(member: CS.FairyEditor.PublishHandler.MemberInfo) {
-    const { varName, type} = member;
+    const { varName, type, res } = member;
     if (!MemberTypeMap[type]) {
-        if (member.res && MemberTypeMap[member.res.type]) {
-            return MemberTypeMap[member.res.type] + varName;
+        const extType = (<CS.FairyEditor.ComponentAsset>res?.GetAsset())?.extension;
+        if (MemberTypeMap[extType]) {
+            return MemberTypeMap[extType] + varName;
         } else {
-            console.error("未知的类型：", varName);
-            return varName;
+            console.error("未知的类型：", varName, extType);
+            return "com_" + varName;
         }
     }
     return MemberTypeMap[type] + varName;
