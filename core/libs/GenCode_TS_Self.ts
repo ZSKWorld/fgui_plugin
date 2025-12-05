@@ -179,7 +179,10 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
         writer.startBlock();
         writer.writeln();
 
-        const protectedProperty = classInfo.className.startsWith("UI") || classInfo.className.startsWith("Com");
+        const protectedProperty = classInfo.className.startsWith("Btn")
+            || classInfo.className.startsWith("Render")
+            || classInfo.className.startsWith("Com")
+            || classInfo.className.startsWith("UI");
 
         let memberCnt = members.Count;
         for (let j: number = 0; j < memberCnt; j++) {
