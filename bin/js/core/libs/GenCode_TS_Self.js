@@ -168,10 +168,11 @@ function GenCode_TS_Self(handler) {
         writer.writeln('export default class %s extends %s', classInfo.className, classInfo.superClassName);
         writer.startBlock();
         writer.writeln();
+        const protectedProperty = classInfo.className.startsWith("UI") || classInfo.className.startsWith("Com");
         let memberCnt = members.Count;
         for (let j = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln('public %s: %s;', customMemberVarName(memberInfo), memberInfo.type);
+            writer.writeln(`${protectedProperty ? "protected" : "public"} %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();

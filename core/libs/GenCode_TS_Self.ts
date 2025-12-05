@@ -97,33 +97,33 @@ function genReferenceExt(writer: CodeWriter, references: CS.System.Collections.G
 }
 
 const MemberTypeMap = {
-    "fgui.GComponent":"com_",
-    "fgui.GButton":"btn_",
-    "fgui.GComboBox":"cmb_",
-    "fgui.GLabel":"label_",
-    "fgui.GProgressBar":"pb_",
-    "fgui.GScrollBar":"sb_",
-    "fgui.GSlider":"slider_",
-    "fgui.GTextField":"txt_",
-    "fgui.GRichTextField":"rtxt_",
-    "fgui.GTextInput":"itxt_",
-    "fgui.GGraph":"graph_",
-    "fgui.GList":"list_",
-    "fgui.GLoader":"loader_",
-    "fgui.GGroup":"group_",
-    "fgui.GLoader3D":"loader3d_",
-    "fgui.GImage":"img_",
-    "fgui.Controller":"ctrl_",
+    "fgui.GComponent": "com_",
+    "fgui.GButton": "btn_",
+    "fgui.GComboBox": "cmb_",
+    "fgui.GLabel": "label_",
+    "fgui.GProgressBar": "pb_",
+    "fgui.GScrollBar": "sb_",
+    "fgui.GSlider": "slider_",
+    "fgui.GTextField": "txt_",
+    "fgui.GRichTextField": "rtxt_",
+    "fgui.GTextInput": "itxt_",
+    "fgui.GGraph": "graph_",
+    "fgui.GList": "list_",
+    "fgui.GLoader": "loader_",
+    "fgui.GGroup": "group_",
+    "fgui.GLoader3D": "loader3d_",
+    "fgui.GImage": "img_",
+    "fgui.Controller": "ctrl_",
     "fgui.Transition": "trans_",
-    
-    
+
+
     // "component":"com_",
     "Button": "btn_",
-    "Label":"label_",
-    "ProgressBar":"pb_",
-    "ScrollBar":"sb_",
-    "Slider":"slider_",
-    "ComboBox":"cmb_",
+    "Label": "label_",
+    "ProgressBar": "pb_",
+    "ScrollBar": "sb_",
+    "Slider": "slider_",
+    "ComboBox": "cmb_",
 };
 function customMemberVarName(member: CS.FairyEditor.PublishHandler.MemberInfo) {
     const { varName, type, res } = member;
@@ -179,10 +179,12 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
         writer.startBlock();
         writer.writeln();
 
+        const protectedProperty = classInfo.className.startsWith("UI") || classInfo.className.startsWith("Com");
+
         let memberCnt = members.Count;
         for (let j: number = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln('public %s: %s;', customMemberVarName(memberInfo), memberInfo.type);
+            writer.writeln(`${ protectedProperty ? "protected" : "public" } %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
