@@ -127,16 +127,11 @@ const MemberTypeMap = {
 };
 function customMemberVarName(member: CS.FairyEditor.PublishHandler.MemberInfo) {
     const { varName, type, res } = member;
-    if (!MemberTypeMap[type]) {
-        const extType = (<CS.FairyEditor.ComponentAsset>res?.GetAsset())?.extension;
-        if (MemberTypeMap[extType]) {
-            return MemberTypeMap[extType] + varName;
-        } else {
-            console.error("未知的类型：", varName, extType);
-            return "com_" + varName;
-        }
-    }
-    return MemberTypeMap[type] + varName;
+    const extType = (<CS.FairyEditor.ComponentAsset>res?.GetAsset())?.extension;
+    if (MemberTypeMap[extType]) return MemberTypeMap[extType] + varName;
+    if (MemberTypeMap[type]) return MemberTypeMap[type] + varName;
+
+    return "com_" + varName;
 }
 
 export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
@@ -183,7 +178,8 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
         let memberCnt = members.Count;
         for (let j: number = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
-            writer.writeln(`${ protectedProperty ? "protected" : "public" } %s: %s;`, customMemberVarName(memberInfo), memberInfo.type);
+            let memberVarName = customMemberVarName(memberInfo);
+            writer.writeln(`${ protectedProperty ? "protected" : "public" } %s: %s;`, memberVarName, memberInfo.type);
         }
         writer.writeln('public static url: string = "ui://%s%s";', handler.pkg.id, classInfo.resId);
         writer.writeln();
@@ -198,23 +194,24 @@ export function GenCode_TS_Self(handler: CS.FairyEditor.PublishHandler) {
         writer.startBlock();
         for (let j: number = 0; j < memberCnt; j++) {
             let memberInfo = members.get_Item(j);
+            let memberVarName = customMemberVarName(memberInfo);
             if (memberInfo.group == 0) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', customMemberVarName(memberInfo), memberInfo.type, memberInfo.name);
+                    writer.writeln('this.%s = <%s>(this.getChild("%s"));', memberVarName, memberInfo.type, memberInfo.name);
                 else
-                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', customMemberVarName(memberInfo), memberInfo.type, memberInfo.index);
+                    writer.writeln('this.%s = <%s>(this.getChildAt(%s));', memberVarName, memberInfo.type, memberInfo.index);
             }
             else if (memberInfo.group == 1) {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getController("%s");', customMemberVarName(memberInfo), memberInfo.name);
+                    writer.writeln('this.%s = this.getController("%s");', memberVarName, memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getControllerAt(%s);', customMemberVarName(memberInfo), memberInfo.index);
+                    writer.writeln('this.%s = this.getControllerAt(%s);', memberVarName, memberInfo.index);
             }
             else {
                 if (getMemberByName)
-                    writer.writeln('this.%s = this.getTransition("%s");', customMemberVarName(memberInfo), memberInfo.name);
+                    writer.writeln('this.%s = this.getTransition("%s");', memberVarName, memberInfo.name);
                 else
-                    writer.writeln('this.%s = this.getTransitionAt(%s);', customMemberVarName(memberInfo), memberInfo.index);
+                    writer.writeln('this.%s = this.getTransitionAt(%s);', memberVarName, memberInfo.index);
             }
         }
         writer.endBlock();
