@@ -29,9 +29,9 @@ function setMemberTypeName(info, clsInfo) {
 }
 /** 加入不同包的资源引入路径 */
 function CollectClasses(handler, stripMember, ns) {
-    let classes = handler.CollectClasses(stripMember, stripMember, ns);
+    const classes1 = handler.CollectClasses(stripMember, stripMember, ns);
     let hasOtherPkgRes = false;
-    classes.ForEach(clsInfo => {
+    classes1.ForEach(clsInfo => {
         clsInfo.members.ForEach(memberInfo => {
             if (memberInfo.res) {
                 if (memberInfo.res.owner.name != handler.pkg.name) {
@@ -40,40 +40,50 @@ function CollectClasses(handler, stripMember, ns) {
                         handler.items.Add(memberInfo.res);
                     }
                 }
-                const existRes = classes.Find(v => v.res == memberInfo.res) != null;
-                existRes && setMemberTypeName(memberInfo, clsInfo);
             }
         });
     });
-    if (hasOtherPkgRes) {
-        classes = handler.CollectClasses(stripMember, stripMember, ns);
-        classes.ForEach(clsInfo => {
-            if (clsInfo.res.owner.name == handler.pkg.name) {
-                clsInfo.members.ForEach(memberInfo => {
-                    if (memberInfo.res) {
-                        // if (memberInfo.res.owner.name != handler.pkg.name) {
-                        const existRes = classes.Find(v => v.res == memberInfo.res) != null;
-                        if (existRes && !setMemberTypeName(memberInfo, clsInfo) && memberInfo.res.owner.name != handler.pkg.name) {
-                            memberInfo.type = memberInfo.res.name;
-                            const ref = `//${memberInfo.res.owner.name}/${memberInfo.res.name}`;
-                            if (clsInfo.references.Contains(ref) == false)
-                                clsInfo.references.Add(ref);
-                        }
-                        // } else
-                        //     setMemberTypeName(memberInfo, clsInfo);
-                    }
-                });
+    const classes2 = hasOtherPkgRes ? handler.CollectClasses(stripMember, stripMember, ns) : classes1;
+    classes2.ForEach(clsInfo => {
+        const clsInfo2 = classes1.Find(v => v.className == clsInfo.className);
+        if (!clsInfo2)
+            return;
+        clsInfo2.members.ForEach(memberInfo => {
+            if (memberInfo.res) {
+                const existRes = classes2.Find(v => v.res == memberInfo.res) != null;
+                existRes && setMemberTypeName(memberInfo, clsInfo2);
             }
         });
-        const clsCnt = classes.Count;
-        for (let i = clsCnt - 1; i >= 0; i--) {
-            const cls = classes.get_Item(i);
-            if (cls.res.owner.name != handler.pkg.name) {
-                classes.RemoveAt(i);
-            }
-        }
-    }
-    return classes;
+    });
+    // if (hasOtherPkgRes) {
+    //     const classes = handler.CollectClasses(stripMember, stripMember, ns);
+    //     classes.ForEach(clsInfo => {
+    //         if (clsInfo.res.owner.name == handler.pkg.name) {
+    //             clsInfo.members.ForEach(memberInfo => {
+    //                 if (memberInfo.res) {
+    //                     // if (memberInfo.res.owner.name != handler.pkg.name) {
+    //                     const existRes = classes.Find(v => v.res == memberInfo.res) != null;
+    //                     if (existRes && !setMemberTypeName(memberInfo, clsInfo) && memberInfo.res.owner.name != handler.pkg.name) {
+    //                         memberInfo.type = memberInfo.res.name;
+    //                         const ref = `//${ memberInfo.res.owner.name }/${ memberInfo.res.name }`;
+    //                         if (clsInfo.references.Contains(ref) == false)
+    //                             clsInfo.references.Add(ref);
+    //                     }
+    //                     // } else
+    //                     //     setMemberTypeName(memberInfo, clsInfo);
+    //                 }
+    //             });
+    //         }
+    //     });
+    //     const clsCnt = classes.Count;
+    //     for (let i = clsCnt - 1; i >= 0; i--) {
+    //         const cls = classes.get_Item(i);
+    //         if (cls.res.owner.name != handler.pkg.name) {
+    //             classes.RemoveAt(i);
+    //         }
+    //     }
+    // }
+    return classes1;
 }
 function genReferenceExt(writer, references) {
     let refCount = references.Count;
@@ -126,10 +136,10 @@ function customMemberVarName(member) {
     var _a;
     const { varName, type, res } = member;
     const extType = (_a = res === null || res === void 0 ? void 0 : res.GetAsset()) === null || _a === void 0 ? void 0 : _a.extension;
-    if (MemberTypeMap[extType])
-        return MemberTypeMap[extType] + varName;
     if (MemberTypeMap[type])
         return MemberTypeMap[type] + varName;
+    if (MemberTypeMap[extType])
+        return MemberTypeMap[extType] + varName;
     return "com_" + varName;
 }
 function GenCode_TS_Self(handler) {
